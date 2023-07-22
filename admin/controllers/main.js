@@ -11,13 +11,55 @@ function getProducts() {
     });
 }
 
+// function samsungFilter() {
+//   var filter_array = []
+
+//   apiGetProductsList()
+//     .then((response) => {
+//       // console.log(response.data)
+//       for (var i = 0; i < response.data.length; i++) {
+//         if (response.data[i].type.toLowerCase() == "samsung") {
+//           filter_array.push(response.data[i])
+//         }
+//       }
+
+//       console.log(filter_array)
+//       display(filter_array)
+//     })
+//     .catch((error) => {
+//       console.log(error);
+//     });
+
+// }
+
+// function iphoneFilter() {
+//   var filter_array = []
+
+//   apiGetProductsList()
+//     .then((response) => {
+//       // console.log(response.data)
+//       for (var i = 0; i < response.data.length; i++) {
+//         if (response.data[i].type.toLowerCase() == "iphone") {
+//           filter_array.push(response.data[i])
+//         }
+//       }
+
+//       console.log(filter_array)
+//       display(filter_array)
+//     })
+//     .catch((error) => {
+//       console.log(error);
+//     });
+
+// }
+
 function createProduct() {
   // DOM và khởi tạo object product
   let product = {
     name: getElement("#TenSP").value,
     price: +getElement("#GiaSP").value,
     image: getElement("#HinhSP").value,
-    type: getElement("#loaiSP").value,
+    description: getElement("#loaiSP").value,
   };
 
   // Gọi API thêm sản phẩm
