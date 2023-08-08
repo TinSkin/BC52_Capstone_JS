@@ -1,7 +1,8 @@
-function Product(id, name, price, img, description) {
+function Product(id, name, price, img, desc, type ) {
   this.id = id;
   this.name = name;
   this.price = price;
   this.img = img;
-  this.description = description;
+  this.desc = desc;
+  this.type=type;
 }

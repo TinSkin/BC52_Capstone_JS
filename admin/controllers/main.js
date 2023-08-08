@@ -146,8 +146,10 @@ function display(products) {
       value.id,
       value.name,
       value.price,
-      value.image,
+      value.img,
+      value.desc,
       value.type
+
     );
 
     return (
@@ -158,9 +160,12 @@ function display(products) {
           <td>${product.name}</td>
           <td>${product.price}</td>
           <td>
-            <img src="${product.image}" width="100px" height="100px" />
+            <img src="${product.img}" width="100px" height="100px" />
           </td>
+          <td>${product.desc}</td>
           <td>${product.type}</td>
+
+          
           <td>
             <button
               class="btn btn-primary"
