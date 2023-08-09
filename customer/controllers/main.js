@@ -1,170 +1,92 @@
-getProducts();
+let shop = document.getElementById("shop");
 
-function getProducts() {
-  apiGetProducts()
-    .then((response) => {
-      // Gọi hàm display để hiển thị ra giao diện
-      display(response.data);
+let basket = JSON.parse(localStorage.getItem("data")) || [];
+
+// Fetch data from the API
+fetch("https://64b6ce1adf0839c97e162662.mockapi.io/Products")
+  .then(response => response.json())
+  .then(data => {
+    const shopItemsData = data;
+    generateShop(shopItemsData);
+  })
+  .catch(error => {
+    console.error("Error fetching data:", error);
+  });
+
+let generateShop = (data) => {
+  shop.innerHTML = data
+    .map((x) => {
+      let { id ,name ,price ,screen ,img ,desc ,type} = x;
+      let search = basket.find((y) => y.id === id) || [];
+      return `
+    <div id="product-id-${id}" class="item">
+      <img width="220" src=${img} alt="">
+      <div class="details">
+        <h3>${name}</h3>
+        <p>${type}</p>
+        <p>${desc}</p>
+        <div class="price-quantity">
+          <h2>$ ${price} </h2>
+          <div class="buttons">
+            <i onclick="decrement('${id}')" class="bi bi-dash-lg"></i>
+            <div id="${id}" class="quantity">${
+        search.item === undefined ? 0 : search.item
+      }</div>
+            <i onclick="increment('${id}')" class="bi bi-plus-lg"></i>
+          </div>
+        </div>
+      </div>
+  </div>
+    `;
     })
-    .catch((error) => {
-      console.log(error);
-    });
-}
-
-function createProduct() {
-  // DOM và khởi tạo object product
-  let product = {
-    name: getElement("#TenSP").value,
-    price: +getElement("#GiaSP").value,
-    image: getElement("#HinhSP").value,
-    type: getElement("#loaiSP").value,
-  };
-
-  // Gọi API thêm sản phẩm
-  apiCreateProduct(product)
-    .then((response) => {
-      // Sau khi thêm thành công, dữ liệu chỉ mới được cập nhật ở phía server. Ta cần gọi lại hàm apiGetProducts để lấy được danh sách những sản phẩm mới nhất (bao gồm sản phẩm mình mới thêm)
-      return apiGetProducts();
-    })
-    .then((response) => {
-      // response là kết quả promise của hàm apiGetProducts
-      display(response.data);
-      // Ẩn modal
-      $("#myModal").modal("hide");
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-}
-
-function deleteProduct(productId) {
-  apiDeleteProduct(productId)
-    .then(() => {
-      // Xoá thành công
-      return apiGetProducts();
-    })
-    .then((response) => {
-      display(response.data);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-}
-
-function selectProduct(productId) {
-  // Hiển thị modal
-  $("#myModal").modal("show");
-  // Hiển thị title và footer của modal
-  getElement(".modal-title").innerHTML = "Cập nhật sản phẩm";
-  getElement(".modal-footer").innerHTML = `
-    <button class="btn btn-secondary" data-dismiss="modal">Huỷ</button>
-    <button class="btn btn-success" onclick="updateProduct('${productId}')">Cập nhật</button>
-  `;
-
-  apiGetProductById(productId)
-    .then((response) => {
-      // Lấy thông tin sản phẩm thành công => hiển thị dữ liệu lên form
-      let product = response.data;
-      getElement("#TenSP").value = product.name;
-      getElement("#GiaSP").value = product.price;
-      getElement("#HinhSP").value = product.image;
-      getElement("#loaiSP").value = product.type;
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-}
-
-function updateProduct(productId) {
-  // DOM và khởi tạo object product
-  let newProduct = {
-    name: getElement("#TenSP").value,
-    price: +getElement("#GiaSP").value,
-    image: getElement("#HinhSP").value,
-    type: getElement("#loaiSP").value,
-  };
-
-  apiUpdateProduct(productId, newProduct)
-    .then(() => {
-      // Cập nhật thành công
-      return apiGetProducts();
-    })
-    .then((response) => {
-      display(response.data);
-      $("#myModal").modal("hide");
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-}
-
-function display(products) {
-  let html = products.reduce((result, value, index) => {
-    let product = new Product(
-      value.id,
-      value.name,
-      value.price,
-      value.image,
-      value.type
-    );
-
-    return (
-      result +
-      `
-        <tr>
-          <td>${index + 1}</td>
-          <td>${product.name}</td>
-          <td>${product.price}</td>
-          <td>
-            <img src="${product.image}" width="100px" height="100px" />
-          </td>
-          <td>${product.type}</td>
-          <td>
-            <button
-              class="btn btn-primary"
-              onclick="selectProduct('${product.id}')"
-            >
-              Xem
-            </button>
-            <button
-              class="btn btn-danger"
-              onclick="deleteProduct('${product.id}')"
-            >
-              Xoá
-            </button>
-          </td>
-        </tr>
-      `
-    );
-  }, "");
-
-  document.getElementById("tblDanhSachSP").innerHTML = html;
-}
-
-// ======= DOM =======
-getElement("#btnThemSP").onclick = () => {
-  getElement(".modal-title").innerHTML = "Thêm sản phẩm";
-  getElement(".modal-footer").innerHTML = `
-    <button class="btn btn-secondary" data-dismiss="modal">Huỷ</button>
-    <button class="btn btn-success" onclick="createProduct()">Thêm</button>
-  `;
+    .join("");
 };
 
-getElement("#txtSearch").onkeypress = (event) => {
-  if (event.key !== "Enter") {
-    return;
+
+let increment = (id) => {
+  let selectedItem = id;
+  let search = basket.find((x) => x.id === selectedItem);
+
+  if (search === undefined) {
+    basket.push({
+      id: selectedItem,
+      item: 1,
+    });
+  } else {
+    search.item += 1;
   }
 
-  apiGetProducts(event.target.value)
-    .then((response) => {
-      display(response.data);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+  console.log(basket);
+  update(selectedItem);
+  localStorage.setItem("data", JSON.stringify(basket));
 };
 
-// ======= Utils =======
-function getElement(selector) {
-  return document.querySelector(selector);
-}
+let decrement = (id) => {
+  let selectedItem = id;
+  let search = basket.find((x) => x.id === selectedItem);
+
+  if (search === undefined) return;
+  else if (search.item === 0) return;
+  else {
+    search.item -= 1;
+  }
+
+  update(selectedItem);
+  basket = basket.filter((x) => x.item !== 0);
+  console.log(basket);
+  localStorage.setItem("data", JSON.stringify(basket));
+};
+
+let update = (id) => {
+  let search = basket.find((x) => x.id === id);
+  document.getElementById(id).innerHTML = search.item;
+  calculation();
+};
+
+let calculation = () => {
+  let cartIcon = document.getElementById("cartAmount");
+  cartIcon.innerHTML = basket.map((x) => x.item).reduce((x, y) => x + y, 0);
+};
+
+
+calculation();

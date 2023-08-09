@@ -8,6 +8,7 @@
 }
 
 body {
+    font-family: 'Poppins', sans-serif;
     margin: 0;
     padding: 0;
     background: linear-gradient(120deg, #2980b9, #8e44ad);
@@ -58,4 +59,24 @@ a:link {
     background: white;
     border-radius: 10px;
     box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.05);
+}
+
+.sp-thongbao {
+    color: red;
+    margin-left: 2px;
+    display: none;
+}
+
+.wrapper {
+    padding-top: 40px;
+}
+
+#content1{
+    width: 100%;
+    /* background: #74ebd5; */
+    /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #ACB6E5, #74ebd5);
+    /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #ACB6E5, #74ebd5);
+    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
